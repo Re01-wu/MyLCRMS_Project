@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LcChildInfoMapper">
+
+    <resultMap type="com.ruoyi.system.domain.LcChildInfo" id="LcChildInfoResult">
+        <result property="childId"    column="child_id"    />
+        <result property="name"    column="name"    />
+        <result property="gender"    column="gender"    />
+        <result property="birthDate"    column="birth_date"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="school"    column="school"    />
+        <result property="grade"    column="grade"    />
+        <result property="homeAddress"    column="home_address"    />
+        <result property="healthStatus"    column="health_status"    />
+        <result property="primaryGuardianId"    column="primary_guardian_id"    />
+        <result property="status"    column="status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <!-- ==================== 新增映射 开始 ==================== -->
+        <result property="primaryGuardianName" column="primaryGuardianName" />
+        <!-- ==================== 新增映射 结束 ==================== -->
+    </resultMap>
+
+    <sql id="selectLcChildInfoVo">
+        select
+        c.child_id, c.name, c.gender, c.birth_date, c.id_card, c.school,
+        c.grade, c.home_address, c.health_status, c.primary_guardian_id,
+        c.status, c.create_by, c.create_time, c.update_by, c.update_time, c.remark,
+        <!-- ==================== 新增查询字段 开始 ==================== -->
+        g.name as primaryGuardianName
+        <!-- ==================== 新增查询字段 结束 ==================== -->
+        from lc_child_info c
+        <!-- ==================== 新增 LEFT JOIN 开始 ==================== -->
+        left join lc_guardian_info g on c.primary_guardian_id = g.guardian_id
+        <!-- ==================== 新增 LEFT JOIN 结束 ==================== -->
+    </sql>
+
+    <select id="selectLcChildInfoList" parameterType="com.ruoyi.system.domain.LcChildInfo" resultMap="LcChildInfoResult">
+        <include refid="selectLcChildInfoVo"/>
+        <where>
+            <!-- ==================== 修改别名 开始 ==================== -->
+            <if test="name != null  and name != ''"> and c.name like concat('%', #{name}, '%')</if>
+            <!-- 可以根据需要添加其他查询条件，并使用 c. 前缀 -->
+            <if test="school != null and school != ''"> and c.school like concat('%', #{school}, '%')</if>
+            <if test="grade != null and grade != ''"> and c.grade = #{grade}</if>
+            <if test="status != null and status != ''"> and c.status = #{status}</if>
+            <!-- ==================== 修改别名 结束 ==================== -->
+        </where>
+        <!-- 可以添加排序 -->
+        <!-- order by c.create_time desc -->
+    </select>
+
+    <select id="selectLcChildInfoByChildId" parameterType="Long" resultMap="LcChildInfoResult">
+        <!-- 详情查询也需要关联查询姓名 -->
+        <include refid="selectLcChildInfoVo"/>
+        where c.child_id = #{childId}
+    </select>
+
+    <!-- insert, update, delete 语句通常不需要修改，因为它们只操作主表 lc_child_info -->
+    <insert id="insertLcChildInfo" parameterType="com.ruoyi.system.domain.LcChildInfo" useGeneratedKeys="true" keyProperty="childId">
+        insert into lc_child_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="gender != null">gender,</if>
+            <if test="birthDate != null">birth_date,</if>
+            <if test="idCard != null">id_card,</if>
+            <if test="school != null">school,</if>
+            <if test="grade != null">grade,</if>
+            <if test="homeAddress != null">home_address,</if>
+            <if test="healthStatus != null">health_status,</if>
+            <if test="primaryGuardianId != null">primary_guardian_id,</if>
+            <if test="status != null and status != ''">status,</if> <!-- 加上 status != '' 判断 -->
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="birthDate != null">#{birthDate},</if>
+            <if test="idCard != null">#{idCard},</if>
+            <if test="school != null">#{school},</if>
+            <if test="grade != null">#{grade},</if>
+            <if test="homeAddress != null">#{homeAddress},</if>
+            <if test="healthStatus != null">#{healthStatus},</if>
+            <if test="primaryGuardianId != null">#{primaryGuardianId},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLcChildInfo" parameterType="com.ruoyi.system.domain.LcChildInfo">
+        update lc_child_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="birthDate != null">birth_date = #{birthDate},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="school != null">school = #{school},</if>
+            <if test="grade != null">grade = #{grade},</if>
+            <if test="homeAddress != null">home_address = #{homeAddress},</if>
+            <if test="healthStatus != null">health_status = #{healthStatus},</if>
+            <if test="primaryGuardianId != null">primary_guardian_id = #{primaryGuardianId},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <!-- createBy 和 createTime 通常在更新时不修改 -->
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where child_id = #{childId}
+    </update>
+
+    <delete id="deleteLcChildInfoByChildId" parameterType="Long">
+        delete from lc_child_info where child_id = #{childId}
+    </delete>
+
+    <delete id="deleteLcChildInfoByChildIds" parameterType="String">
+        delete from lc_child_info where child_id in
+        <foreach item="childId" collection="array" open="(" separator="," close=")">
+            #{childId}
+        </foreach>
+    </delete>
+</mapper>

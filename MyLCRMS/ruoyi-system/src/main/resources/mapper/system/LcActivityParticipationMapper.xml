@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LcActivityParticipationMapper">
+
+    <resultMap type="com.ruoyi.system.domain.LcActivityParticipation" id="LcActivityParticipationResult">
+        <result property="participationId"    column="participation_id"    />
+        <result property="activityId"    column="activity_id"    />
+        <result property="childId"    column="child_id"    />
+        <result property="participationTime"    column="participation_time"    />
+        <result property="performance"    column="performance"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <!-- ==================== 新增映射 开始 ==================== -->
+        <result property="activityName" column="activityName" />
+        <result property="childName" column="childName" />
+        <!-- ==================== 新增映射 结束 ==================== -->
+    </resultMap>
+
+    <sql id="selectLcActivityParticipationVo">
+        select
+        p.participation_id, p.activity_id, p.child_id, p.participation_time, p.performance,
+        p.create_by, p.create_time, p.update_by, p.update_time, p.remark,
+        <!-- ==================== 新增查询字段 开始 ==================== -->
+        a.activity_name as activityName,
+        c.name as childName
+        <!-- ==================== 新增查询字段 结束 ==================== -->
+        from lc_activity_participation p
+        <!-- ==================== 新增 LEFT JOIN 开始 ==================== -->
+        left join lc_support_activity a on p.activity_id = a.activity_id
+        left join lc_child_info c on p.child_id = c.child_id
+        <!-- ==================== 新增 LEFT JOIN 结束 ==================== -->
+    </sql>
+
+    <select id="selectLcActivityParticipationList" parameterType="com.ruoyi.system.domain.LcActivityParticipation" resultMap="LcActivityParticipationResult">
+        <include refid="selectLcActivityParticipationVo"/>
+        <where>
+            <!-- ==================== 修改别名 开始 ==================== -->
+            <if test="activityId != null "> and p.activity_id = #{activityId}</if>
+            <if test="childId != null "> and p.child_id = #{childId}</if>
+            <!-- 添加按活动名称查询 -->
+            <if test="params.activityName != null and params.activityName != ''"> and a.activity_name like concat('%', #{params.activityName}, '%')</if>
+            <!-- 添加按儿童姓名查询 -->
+            <if test="params.childName != null and params.childName != ''"> and c.name like concat('%', #{params.childName}, '%')</if>
+            <!-- ==================== 修改别名 结束 ==================== -->
+        </where>
+        order by p.create_time desc <!-- 按创建时间倒序 -->
+    </select>
+
+    <select id="selectLcActivityParticipationByParticipationId" parameterType="Long" resultMap="LcActivityParticipationResult">
+        <include refid="selectLcActivityParticipationVo"/>
+        where p.participation_id = #{participationId}
+    </select>
+
+    <!-- insert, update, delete 保持不变 -->
+    <insert id="insertLcActivityParticipation" parameterType="com.ruoyi.system.domain.LcActivityParticipation" useGeneratedKeys="true" keyProperty="participationId">
+        insert into lc_activity_participation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">activity_id,</if>
+            <if test="childId != null">child_id,</if>
+            <if test="participationTime != null">participation_time,</if>
+            <if test="performance != null">performance,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">#{activityId},</if>
+            <if test="childId != null">#{childId},</if>
+            <if test="participationTime != null">#{participationTime},</if>
+            <if test="performance != null">#{performance},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLcActivityParticipation" parameterType="com.ruoyi.system.domain.LcActivityParticipation">
+        update lc_activity_participation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="activityId != null">activity_id = #{activityId},</if>
+            <if test="childId != null">child_id = #{childId},</if>
+            <if test="participationTime != null">participation_time = #{participationTime},</if>
+            <if test="performance != null">performance = #{performance},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where participation_id = #{participationId}
+    </update>
+
+    <delete id="deleteLcActivityParticipationByParticipationId" parameterType="Long">
+        delete from lc_activity_participation where participation_id = #{participationId}
+    </delete>
+
+    <delete id="deleteLcActivityParticipationByParticipationIds" parameterType="String">
+        delete from lc_activity_participation where participation_id in
+        <foreach item="participationId" collection="array" open="(" separator="," close=")">
+            #{participationId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LcVisitRecordMapper">
+
+    <resultMap type="com.ruoyi.system.domain.LcVisitRecord" id="LcVisitRecordResult">
+        <result property="visitId"    column="visit_id"    />
+        <result property="childId"    column="child_id"    />
+        <result property="visitTime"    column="visit_time"    />
+        <result property="visitorUserId"    column="visitor_user_id"    />
+        <result property="visitorName"    column="visitor_name"    />
+        <result property="visitMethod"    column="visit_method"    />
+        <result property="content"    column="content"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <!-- ==================== 修改开始: 添加 childName 映射 ==================== -->
+        <result property="childName" column="childName" />
+        <!-- ==================== 修改结束 ==================== -->
+    </resultMap>
+
+    <sql id="selectLcVisitRecordVo">
+        select
+        v.visit_id, v.child_id, v.visit_time, v.visitor_user_id, v.visitor_name,
+        v.visit_method, v.content, v.create_by, v.create_time, v.update_by,
+        v.update_time, v.remark,
+        <!-- ==================== 修改开始: 添加查询 c.name ==================== -->
+        c.name as childName
+        <!-- ==================== 修改结束 ==================== -->
+        from lc_visit_record v
+        <!-- ==================== 修改开始: 添加 LEFT JOIN ==================== -->
+        left join lc_child_info c on v.child_id = c.child_id
+        <!-- ==================== 修改结束 ==================== -->
+    </sql>
+
+    <select id="selectLcVisitRecordList" parameterType="com.ruoyi.system.domain.LcVisitRecord" resultMap="LcVisitRecordResult">
+        <include refid="selectLcVisitRecordVo"/>
+        <where>
+            <!-- ==================== 修改开始: 查询条件使用别名 ==================== -->
+            <if test="childId != null "> and v.child_id = #{childId}</if>
+            <!-- 添加按儿童姓名查询 -->
+            <if test="params.childName != null and params.childName != ''"> and c.name like concat('%', #{params.childName}, '%')</if>
+            <!-- 日期范围查询 -->
+            <if test="params.beginVisitTime != null and params.beginVisitTime != ''">
+                and date_format(v.visit_time,'%y%m%d') >= date_format(#{params.beginVisitTime},'%y%m%d')
+            </if>
+            <if test="params.endVisitTime != null and params.endVisitTime != ''">
+                and date_format(v.visit_time,'%y%m%d') &lt;= date_format(#{params.endVisitTime},'%y%m%d')
+            </if>
+            <!-- 添加按家访人姓名查询 -->
+            <if test="visitorName != null and visitorName != ''"> and v.visitor_name like concat('%', #{visitorName}, '%')</if>
+            <!-- ==================== 修改结束 ==================== -->
+        </where>
+        order by v.visit_time desc
+    </select>
+
+    <select id="selectLcVisitRecordByVisitId" parameterType="Long" resultMap="LcVisitRecordResult">
+        <!-- 详情查询也加上 join -->
+        <include refid="selectLcVisitRecordVo"/>
+        where v.visit_id = #{visitId}
+    </select>
+
+    <!-- insert, update, delete 语句保持不变 -->
+    <insert id="insertLcVisitRecord" parameterType="com.ruoyi.system.domain.LcVisitRecord" useGeneratedKeys="true" keyProperty="visitId">
+        insert into lc_visit_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="childId != null">child_id,</if>
+            <if test="visitTime != null">visit_time,</if>
+            <if test="visitorUserId != null">visitor_user_id,</if>
+            <if test="visitorName != null and visitorName != ''">visitor_name,</if>
+            <if test="visitMethod != null">visit_method,</if>
+            <if test="content != null">content,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="childId != null">#{childId},</if>
+            <if test="visitTime != null">#{visitTime},</if>
+            <if test="visitorUserId != null">#{visitorUserId},</if>
+            <if test="visitorName != null and visitorName != ''">#{visitorName},</if>
+            <if test="visitMethod != null">#{visitMethod},</if>
+            <if test="content != null">#{content},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLcVisitRecord" parameterType="com.ruoyi.system.domain.LcVisitRecord">
+        update lc_visit_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="childId != null">child_id = #{childId},</if>
+            <if test="visitTime != null">visit_time = #{visitTime},</if>
+            <if test="visitorUserId != null">visitor_user_id = #{visitorUserId},</if>
+            <if test="visitorName != null and visitorName != ''">visitor_name = #{visitorName},</if>
+            <if test="visitMethod != null">visit_method = #{visitMethod},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where visit_id = #{visitId}
+    </update>
+
+    <delete id="deleteLcVisitRecordByVisitId" parameterType="Long">
+        delete from lc_visit_record where visit_id = #{visitId}
+    </delete>
+
+    <delete id="deleteLcVisitRecordByVisitIds" parameterType="String">
+        delete from lc_visit_record where visit_id in
+        <foreach item="visitId" collection="array" open="(" separator="," close=")">
+            #{visitId}
+        </foreach>
+    </delete>
+</mapper>

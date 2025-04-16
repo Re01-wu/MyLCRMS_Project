@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>MyLCRMS</artifactId>
+        <groupId>com.lcrms</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>ruoyi-system</artifactId>
+
+    <description>
+        system系统模块 (留守儿童管理系统)
+    </description>
+
+    <dependencies>
+
+        <!-- 通用工具-->
+        <dependency>
+            <!-- ==================== 修改 groupId 开始 ==================== -->
+            <groupId>${project.groupId}</groupId>
+            <!-- ==================== 修改 groupId 结束 ==================== -->
+            <artifactId>ruoyi-common</artifactId>
+            <!-- 版本由父 POM 控制，删除 version -->
+        </dependency>
+
+        <!-- 可能需要 javax.persistence 用于 @Transient 注解 -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>2.2</version> <!-- 或者使用其他兼容版本 -->
+            <scope>provided</scope> <!-- 通常设为 provided 或 optional -->
+        </dependency>
+
+
+    </dependencies>
+
+</project>
